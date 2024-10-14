@@ -1,5 +1,6 @@
 import {
   createUser,
+  editUser,
   getUser,
   getUsers,
 } from '../controllers/UserController.js';
@@ -8,9 +9,21 @@ import {
 const User = {
   type: 'object',
   properties: {
-    id: { type: 'string' },
     name: { type: 'string' },
-    role: { type: 'string' },
+    cpf: { type: 'string' },
+    phone: { type: 'string' },
+  },
+};
+
+const FullUser = {
+  type: 'object',
+  properties: {
+    _id: { type: 'string' },
+    name: { type: 'string' },
+    cpf: { type: 'string' },
+    phone: { type: 'string' },
+    createdAt: { type: 'string' },
+    updatedAt: { type: 'string' },
   },
 };
 
@@ -31,25 +44,37 @@ const getUsersOpt = {
 const getUserOpt = {
   schema: {
     response: {
-      200: User,
+      200: FullUser,
     },
   },
   handler: getUser,
 };
 
+// Options do Create a User
 const postUserOpt = {
   schema: {
     response: {
-      201: User,
+      201: FullUser,
     },
   },
   handler: createUser,
+};
+
+// Options do Edit a User
+const putUserOpt = {
+  schema: {
+    response: {
+      200: FullUser,
+    },
+  },
+  handler: editUser,
 };
 
 function userRoute(fastify, options, done) {
   fastify.get('/users', getUsersOpt);
   fastify.get('/users/:id', getUserOpt);
   fastify.post('/users', postUserOpt);
+  fastify.put('/users/:identifier', putUserOpt);
 
   done();
 }

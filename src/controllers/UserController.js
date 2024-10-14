@@ -1,9 +1,10 @@
-import Users from '../models/users.js';
-import crypto from 'node:crypto';
+import { Types } from 'mongoose';
+import User from '../models/User.js';
 
 // Get a single user
 export const getUser = (req, reply) => {
-  const { id } = req.params;
+  const { cpf, id } = req.params;
+
   const user = Users.find((e) => e.id == id);
 
   if (!user)
@@ -16,22 +17,59 @@ export const getUser = (req, reply) => {
 };
 
 // Get all users
-export const getUsers = (req, reply) => {
-  reply.send(Users);
+export const getUsers = async (req, reply) => {
+  const users = await User.find();
+
+  reply.send(users);
 };
 
 // Create an User
-export const createUser = (req, reply) => {
-  const { name, role } = req.body;
-  const id = crypto.randomUUID();
+export const createUser = async (req, reply) => {
+  const { name, cpf, phone } = req.body;
 
-  const usr = {
-    id,
+  let user = await User.find({ cpf });
+
+  if (user == null) {
+    return reply.code(409).send({
+      statusCode: 409,
+      error: 'Conflict',
+      message: 'This CPF is already in database.',
+    });
+  }
+
+  user = {
     name,
-    role,
+    cpf,
+    phone,
   };
 
-  Users.push(usr);
+  await User.create(user);
 
-  reply.code(201).send(usr);
+  reply.code(201).send(user);
+};
+
+export const editUser = async (req, reply) => {
+  // const { identifier } = req.params;
+
+  // if (Types.ObjectId.isValid(identifier)) {
+  //   let user = await User.findById(identifier);
+
+  //   if (user == null) {
+  //     return reply.code(404).send({
+  //       statusCode: 404,
+  //       error: 'Bad Request',
+  //       message: 'Invalid ID.',
+  //     });
+  //   }
+  // } else {
+  //   return reply.code(404).send({
+  //     statusCode: 400,
+  //     error: 'Bad Request',
+  //     message: 'Invalid ID.',
+  //   });
+  // }
+
+  // console.log(user);
+
+  reply.send({});
 };

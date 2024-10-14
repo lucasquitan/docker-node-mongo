@@ -1,16 +1,16 @@
 import fastify from 'fastify';
-
+import User from './models/User.js';
 import userRoutes from './routes/userRoutes.js';
 
 const server = fastify({ logger: true });
 
+// Database
+import './database/index.js';
+
+// User routes
 server.register(userRoutes);
 
 const port = process.env.PORT;
-
-server.get('/', async (req, reply) => {
-  return reply.send({ message: 'Hello' });
-});
 
 try {
   await server.listen({ port: port });
